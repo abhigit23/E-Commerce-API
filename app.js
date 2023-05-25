@@ -16,6 +16,11 @@ const xss = require("xss-clean");
 const cors = require("cors");
 const mongoSanitize = require("express-mongo-sanitize");
 
+// Swagger UI
+const swaggerUI = require("swagger-ui-express");
+const YAML = require("yamljs");
+const swaggerDoc = YAML.load("./swagger.yaml");
+
 // connect to database
 const connectDB = require("./db/connect");
 
@@ -50,12 +55,10 @@ app.use(cookieParser(process.env.JWT_SECRET));
 app.use(express.static("./public"));
 app.use(fileUpload());
 
-app.get("/", (req, res) => res.send("E-Commerce-API"));
-app.get("/api/v1", (req, res) => {
-  // console.log(req.cookies);
-  console.log(req.signedCookies);
-  res.send("E-commerce-api");
+app.get("/", (req, res) => {
+  res.send('<h1>E-Commerce API</h1><a href="/api-docs">Documentation</a>');
 });
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
